@@ -20,6 +20,7 @@ async function run(){
         console.log('Database Connected');
         const productsCollection = client.db('rm_hardware_technology').collection('products');
         const orderCollection = client.db('rm_hardware_technology').collection('orders');
+        const userCollection = client.db('rm_hardware_technology').collection('users');
 
         app.get('/product', async (req, res)=>{
             const query = {};
@@ -27,6 +28,19 @@ async function run(){
             const products = await cursor.toArray();
             res.send(products);
         });
+
+        app.put('/user/:email', async(req, res)=>{
+          const email = req.params.email;
+          const user = req.body;
+          const filter = {email: email};
+          const options = { upsert: true };
+          const updateDoc = {
+            $set: user,
+          };
+          const result = await userCollection.updateOne(filter, updateDoc, options);
+          res.send(result);
+        });
+    
 
         app.get('/product/:id', async(req,res)=>{
           const id = req.params.id;
@@ -42,12 +56,13 @@ async function run(){
       });
 
       app.get('/order', async (req, res)=>{
-        const query = {};
-        const cursor = orderCollection.find(query);
-        const orders = await cursor.toArray();
+        const userEmail = req.query.userEmail; 
+        const query = {userEmail: userEmail};
+        const orders = await orderCollection.find(query).toArray();
         res.send(orders);
     }); 
 
+    
     }
     finally{
 
