@@ -19,6 +19,7 @@ async function run(){
         await client.connect();
         console.log('Database Connected');
         const productsCollection = client.db('rm_hardware_technology').collection('products');
+        const orderCollection = client.db('rm_hardware_technology').collection('orders');
 
         app.get('/product', async (req, res)=>{
             const query = {};
@@ -32,6 +33,12 @@ async function run(){
           const query = {_id:ObjectId(id)};
           const product = await productsCollection.findOne(query);
           res.send(product);
+      });
+
+      app.post('/order', async(req, res)=>{
+        const order = req.body;
+        const result = await orderCollection.insertOne(order);
+        res.send(result);
       });
 
     }
