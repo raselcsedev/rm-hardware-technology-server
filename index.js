@@ -54,6 +54,7 @@ async function run(){
         app.get('/admin/:email', async(req, res)=>{
           const email = req.params.email;
           const user = await userCollection.findOne({email: email});
+          const isAdmin = user.role === 'admin';
           res.send({admin: isAdmin})
         })
 
@@ -103,7 +104,11 @@ async function run(){
         res.send(result);
       });
 
-      
+     app.post('/product', async(req, res)=>{
+       const product = req.body;
+       const result = await productsCollection.insertOne(product);
+       res.send(result);
+     }) 
 
     
     }
